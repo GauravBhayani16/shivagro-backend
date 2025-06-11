@@ -5,13 +5,24 @@ const app = express();
 const productsRoute = require("./routes/product-router.js");
 const connectDb = require("./utils/db.js");
 
-const corsOptions = {
-  origin: "http://localhost:5173",
-  methods: "GET , POST, PUT, PATCH, DELETE, HEAD",
-  credentials: true,
-};
+const allowedOrigins = [
+  "https://shivagroagency.netlify.app", // Production frontend
+  "http://localhost:5173", // Local frontend (optional for local testing)
+];
 
-app.use(cors(corsOptions));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
